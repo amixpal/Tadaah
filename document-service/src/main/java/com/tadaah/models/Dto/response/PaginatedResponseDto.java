@@ -6,12 +6,12 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 /**
- * Data Transfer Object for paginated document filtering response.
+ * Data Transfer Object for paginated filtering response.
  *
  * @param <T> The type of the content being returned in the response.
  */
 @Data
-public class DocumentFilterResponseDto<T> {
+public class PaginatedResponseDto<T> {
   private long totalElements;
   private int totalPages;
   private int size;
@@ -20,7 +20,7 @@ public class DocumentFilterResponseDto<T> {
   private boolean last;
   private boolean empty;
 
-  public DocumentFilterResponseDto(Page<T> page) {
+  public PaginatedResponseDto(Page<T> page) {
     this.totalElements = page.getTotalElements();
     this.totalPages = page.getTotalPages();
     this.size = page.getSize();

@@ -1,44 +1,79 @@
 package com.tadaah.utils;
 
+import com.tadaah.exceptions.NotificationServiceException;
+import com.tadaah.models.Documents;
+import com.tadaah.models.NotificationType;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 public class NotificationUtil {
-  private static final Logger logger = LoggerFactory.getLogger(NotificationUtil.class);
 
-  // Private constructor to prevent instantiation
   private NotificationUtil() {
+    // Private constructor to prevent instantiation
   }
 
   /**
    * Sends a notification to the notification service.
    *
-   * @param restTemplate The RestTemplate to use for sending the notification.
+   * @param restTemplate           The RestTemplate to use for sending the notification.
    * @param notificationServiceUrl The URL of the notification service.
-   * @param receiver The receiver of the notification.
-   * @param documentId The document ID related to the notification.
-   * @param action The action performed (CREATED, UPDATED, DELETED).
+   * @param documents              The document object
+   * @param notificationType       The type of notification (CREATE, UPDATE, DELETE).
    */
+  public static void sendNotification(RestTemplate restTemplate, String notificationServiceUrl,
+      Documents documents, NotificationType notificationType) {
+    LocalDateTime now = LocalDateTime.now();
+    // Format the timestamp in a human-readable format
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    String timestamp = now.format(formatter);
 
-  //TODO: Add a custom message here as well
-  public static void sendNotification(RestTemplate restTemplate, String notificationServiceUrl, String receiver, String documentId, String action) {
-    NotificationRequest request = new NotificationRequest(receiver, documentId, action);
-    restTemplate.postForEntity(notificationServiceUrl, request, Void.class);
-    logger.info("Notification sent for action: {} on document ID: {}", action, documentId);
+    String message = notificationType.getMessageTemplate()
+        .replace("{{userName}}", documents.getUserName())
+        .replace("{{documentName}}", documents.getName());
+
+    NotificationRequest request = new NotificationRequest(
+        documents.getUserName(),
+        documents.getName(),
+        timestamp,
+        notificationType.name(),
+        message,
+        documents.getId()
+    );
+
+    try {
+      restTemplate.postForEntity(notificationServiceUrl, request, Void.class);
+      log.info("Notification sent for action: {} on document named: {}", notificationType,
+          documents.getName());
+    } catch (Exception e) {
+      throw new NotificationServiceException(
+          "Failed to send notification for action: " + notificationType + " on document named: "
+              + documents.getName(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
   }
 
   @Data
   public static class NotificationRequest {
-    private String receiver;
-    private String documentId;
-    private String action;
 
-    public NotificationRequest(String receiver, String documentId, String action) {
+    private String receiver;
+    private String documentName;
+    private String documentId;
+    private String timestamp;
+    private String eventType;
+    private String message;
+
+    public NotificationRequest(String receiver, String documentName, String timestamp,
+        String eventType, String message, String documentId) {
       this.receiver = receiver;
+      this.documentName = documentName;
+      this.timestamp = timestamp;
+      this.eventType = eventType;
+      this.message = message;
       this.documentId = documentId;
-      this.action = action;
     }
   }
 }

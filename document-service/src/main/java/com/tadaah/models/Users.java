@@ -1,7 +1,10 @@
 package com.tadaah.models;
 
+import java.time.LocalDateTime;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -15,7 +18,13 @@ public class Users {
   private String userName;
   private String firstName;
   private String lastName;
-  private String email;
+
+  // TODO: Bug, Not getting updated
+  @CreatedDate
+  private LocalDateTime createdDate;
+
+  @LastModifiedDate
+  private LocalDateTime lastModifiedDate;
 
   @Override
   public String toString() {
@@ -23,7 +32,8 @@ public class Users {
         "username='" + userName + '\'' +
         ", firstName='" + firstName + '\'' +
         ", lastName='" + lastName + '\'' +
-        ", email='" + email + '\'' +
+        ", createdDate=" + createdDate +
+        ", lastModifiedDate=" + lastModifiedDate +
         '}';
   }
 }
