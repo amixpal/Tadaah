@@ -1,5 +1,6 @@
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 }
 plugins {
     java
@@ -37,6 +38,7 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter")
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+        implementation("org.springframework.boot:spring-boot-starter-validation")
         compileOnly("org.projectlombok:lombok")
         developmentOnly("org.springframework.boot:spring-boot-devtools")
         annotationProcessor("org.projectlombok:lombok")
