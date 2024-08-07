@@ -1,17 +1,20 @@
 package com.tadaah.services.impl;
 
 import com.tadaah.exceptions.UserServiceException;
+import com.tadaah.models.Dto.request.UserDto;
+import com.tadaah.models.Dto.response.PaginatedResponseDto;
 import com.tadaah.models.Users;
 import com.tadaah.repositories.UserRepository;
 import com.tadaah.services.UserService;
+import com.tadaah.utils.GenericUtils;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,26 +26,30 @@ public class UserServiceImpl implements UserService {
   /**
    * Creates a new user.
    *
-   * @param user The user to be created.
+   * @param userDto The user data transfer object containing user details.
    * @return The created user.
    * @throws UserServiceException if a user with the given username already exists or unexpected errors occur during creation.
    */
   @Override
-  public Users createUser(Users user) {
-    logger.info("Creating a new user: {}", user.getUserName());
+  public Users createUser(UserDto userDto) {
+    logger.info("Creating a new user: {}", userDto.getUserName());
 
     // Check if a user with the same username already exists
-    Optional<Users> existingUser = userRepository.findById(user.getUserName());
+    Optional<Users> existingUser = userRepository.findById(userDto.getUserName());
     if (existingUser.isPresent()) {
-      logger.warn("User already exists with username: {}", user.getUserName());
-      throw new UserServiceException("User already exists with username: " + user.getUserName(), HttpStatus.CONFLICT);
+      logger.warn("User already exists with username: {}", userDto.getUserName());
+      throw new UserServiceException("User already exists with username: " + userDto.getUserName(), HttpStatus.CONFLICT);
     }
 
     try {
+      // Convert UserDto to Users entity using the generic utility method
+      Users user = new Users();
+      GenericUtils.mergeObjects(user, userDto);
+
       // Save the new user to the database
       return userRepository.save(user);
     } catch (RuntimeException e) {
-      logger.error("Error creating user: {}", user.getUserName(), e);
+      logger.error("Error creating user: {}", userDto.getUserName(), e);
       throw new UserServiceException("Error creating user", HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }
@@ -73,21 +80,28 @@ public class UserServiceImpl implements UserService {
   }
 
   /**
-   * Retrieves all users.
+   * Retrieves all users with optional filtering by username and email, and supports pagination.
    *
-   * @return A list of all users.
-   * @throws UserServiceException if unexpected errors occur during retrieval.
+   * This method fetches users from the database with the specified filters and pagination settings.
+   * If no filters are provided, it retrieves all users. The results are returned in a paginated format.
+   *
+   * @param username The username to filter by (optional).
+   * @param pageable The pagination information (page number and page size).
+   * @return A UserFilterResponseDto containing the paginated list of users and pagination details.
+   * @throws UserServiceException if an unexpected error occurs during retrieval.
    */
   @Override
-  public List<Users> getAllUsers() {
+  public PaginatedResponseDto<Users> getAllUsers(String username, Pageable pageable) {
     try {
-      logger.info("Fetching all users");
-      // Retrieve all users from the database
-      return userRepository.findAll();
+      logger.info("Fetching all users with filters - username: {}, email: {}", username);
+      // Retrieve all users from the database with pagination and filters
+      Page<Users> usersPage = userRepository.findByUsername(username, pageable);
+      return new PaginatedResponseDto<>(usersPage);
     } catch (RuntimeException e) {
       logger.error("Error fetching all users", e);
       throw new UserServiceException("Error fetching users", HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }
+
 }
 

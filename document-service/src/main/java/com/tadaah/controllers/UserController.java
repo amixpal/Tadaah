@@ -1,14 +1,19 @@
 package com.tadaah.controllers;
 
+import com.tadaah.models.Dto.request.UserDto;
+import com.tadaah.models.Dto.request.UserFilterRequestDto;
+import com.tadaah.models.Dto.response.PaginatedResponseDto;
 import com.tadaah.models.Dto.response.ResponseDto;
 import com.tadaah.models.Users;
 import com.tadaah.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/users")
@@ -21,13 +26,13 @@ public class UserController {
   /**
    * Create a new user.
    *
-   * @param user The user to be created.
+   * @param userDto The user to be created.
    * @return The created user.
    */
   @PostMapping
-  public ResponseDto<Users> createUser(@RequestBody Users user) {
-    logger.info("createUser API called with parameters: {}", user);
-    Users createdUser = userService.createUser(user);
+  public ResponseDto<Users> createUser(@Validated @RequestBody UserDto userDto) {
+    logger.info("createUser API called with parameters: {}", userDto);
+    Users createdUser = userService.createUser(userDto);
     logger.info("User created successfully: {}", createdUser);
     return ResponseDto.success(createdUser);
   }
@@ -47,15 +52,18 @@ public class UserController {
   }
 
   /**
-   * Get all users.
+   * Get all users with pagination and optional filters.
    *
-   * @return A list of all users.
+   * @param filterDto The filter criteria for retrieving users.
+   * @return A paginated list of all users.
    */
-  @GetMapping
-  public ResponseDto<List<Users>> getAllUsers() {
-    logger.info("getAllUsers API called");
-    List<Users> users = userService.getAllUsers();
-    logger.info("Fetched {} users", users.size());
+  @PostMapping("/filter")
+  public ResponseDto<PaginatedResponseDto<Users>> getAllUsers(@RequestBody UserFilterRequestDto filterDto) {
+    logger.info("getAllUsers API called with filters - username: {}", filterDto.getUserName());
+    Pageable pageable = PageRequest.of(filterDto.getPage(), filterDto.getSize());
+    PaginatedResponseDto<Users> users = userService.getAllUsers(filterDto.getUserName(), pageable);
+    logger.info("Fetched {} users", users.getTotalElements());
     return ResponseDto.success(users);
   }
+
 }

@@ -2,6 +2,7 @@ package com.tadaah.utils;
 
 import com.tadaah.exceptions.DocumentServiceException;
 import com.tadaah.models.Documents;
+import com.tadaah.models.Dto.request.DocumentDto;
 import com.tadaah.models.Users;
 import com.tadaah.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -22,19 +23,19 @@ public class DocumentValidationUtil {
    * @param document The document to be validated.
    * @param userRepository The user repository to fetch user details.
    */
-  public static void validateDocument(Documents document, UserRepository userRepository) {
+  public static void validateDocument(DocumentDto document, UserRepository userRepository) {
     Users user = userRepository.findById(document.getUserName())
         .orElseThrow(() -> {
           logger.error("User not found: {}", document.getUserName());
           return new DocumentServiceException("User not found: " + document.getUserName(), HttpStatus.BAD_REQUEST);
         });
 
-    if (!document.getName().startsWith(user.getUserName())) {
+    if (document.getName() == null || !document.getName().startsWith(user.getUserName())) {
       logger.warn("Document name does not start with the owner's username: {}", document.getName());
       throw new DocumentServiceException("Document name must start with the owner's username.", HttpStatus.BAD_REQUEST);
     }
 
-    if (document.getExpiryDate().isBefore(LocalDate.now().plusDays(60))) {
+    if (document.getExpiryDate() == null || document.getExpiryDate().isBefore(LocalDate.now().plusDays(60))) {
       logger.warn("Document expiry date is less than 60 days in the future: {}", document.getExpiryDate());
       throw new DocumentServiceException("Document expiry date must be at least 60 days in the future.", HttpStatus.BAD_REQUEST);
     }
@@ -47,9 +48,9 @@ public class DocumentValidationUtil {
    * @param userRepository The user repository to fetch user details.
    * @return True if the document is valid, otherwise false.
    */
-  public static boolean verifyDocument(Documents document, UserRepository userRepository) {
+  public static boolean verifyDocument(DocumentDto document, UserRepository userRepository) {
     validateDocument(document, userRepository);
-    logger.info("Document is valid and verified: {}", document.getId());
+    logger.info("Document is valid and verified: {}", document);
     return true;
   }
 }

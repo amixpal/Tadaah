@@ -1,8 +1,9 @@
 package com.tadaah.controllers;
 
 import com.tadaah.models.Documents;
+import com.tadaah.models.Dto.request.DocumentDto;
 import com.tadaah.models.Dto.request.DocumentFilterRequestDto;
-import com.tadaah.models.Dto.response.DocumentFilterResponseDto;
+import com.tadaah.models.Dto.response.PaginatedResponseDto;
 import com.tadaah.models.Dto.response.ResponseDto;
 import com.tadaah.services.DocumentService;
 import org.slf4j.Logger;
@@ -23,13 +24,13 @@ public class DocumentController {
   /**
    * Create a new document.
    *
-   * @param document The document to be created.
+   * @param documentDto The document to be created.
    * @return The created document.
    */
   @PostMapping
-  public ResponseDto<Documents> createDocument(@RequestBody Documents document) {
-    logger.info("Creating a new document: {}", document);
-    Documents createdDocument = documentService.createDocument(document);
+  public ResponseDto<Documents> createDocument(@RequestBody DocumentDto documentDto) {
+    logger.info("Creating a new document: {}", documentDto);
+    Documents createdDocument = documentService.createDocument(documentDto);
     return ResponseDto.success(createdDocument);
   }
 
@@ -37,13 +38,13 @@ public class DocumentController {
    * Update an existing document.
    *
    * @param id The ID of the document to be updated.z
-   * @param document The document details to be updated.
+   * @param documentDto The document details to be updated.
    * @return The updated document.
    */
   @PutMapping("/{id}")
-  public ResponseDto<Documents> updateDocument(@PathVariable String id, @RequestBody Documents document) {
+  public ResponseDto<Documents> updateDocument(@PathVariable String id, @RequestBody DocumentDto documentDto) {
     logger.info("Updating document with ID: {}", id);
-    Documents updatedDocument = documentService.updateDocument(id, document);
+    Documents updatedDocument = documentService.updateDocument(id, documentDto);
     return ResponseDto.success(updatedDocument);
   }
 
@@ -67,10 +68,10 @@ public class DocumentController {
    * @return A ResponseDto containing a DocumentFilterResponseDto with the filtered documents and pagination details.
    */
   @PostMapping("/filter")
-  public ResponseDto<DocumentFilterResponseDto<Documents>> getDocuments(@RequestBody DocumentFilterRequestDto filter) {
+  public ResponseDto<PaginatedResponseDto<Documents>> getDocuments(@RequestBody DocumentFilterRequestDto filter) {
     logger.info("Fetching documents with filters - documentType: {}, user: {}, verified: {}", filter.getDocumentType(), filter.getUser(), filter.getVerified());
     Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-    DocumentFilterResponseDto<Documents> response = documentService.getDocuments(filter.getDocumentType(), filter.getUser(), filter.getVerified(), pageable);
+    PaginatedResponseDto<Documents> response = documentService.getDocuments(filter.getDocumentType(), filter.getUser(), filter.getVerified(), pageable);
     return ResponseDto.success(response);
   }
 }
