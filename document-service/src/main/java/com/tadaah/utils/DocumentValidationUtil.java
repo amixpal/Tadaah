@@ -1,7 +1,6 @@
 package com.tadaah.utils;
 
 import com.tadaah.exceptions.DocumentServiceException;
-import com.tadaah.models.Documents;
 import com.tadaah.models.Dto.request.DocumentDto;
 import com.tadaah.models.Users;
 import com.tadaah.repositories.UserRepository;
