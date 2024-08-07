@@ -4,11 +4,15 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Represents a user in the users collection.
+ * Each user has a unique username and contains personal information such as first name, last name, and email.
+ */
 @Document(collection = "users")
 @Data
 public class Users {
   @Id
-  private String username;
+  private String userName;
   private String firstName;
   private String lastName;
   private String email;
@@ -16,7 +20,7 @@ public class Users {
   @Override
   public String toString() {
     return "Users{" +
-        "username='" + username + '\'' +
+        "username='" + userName + '\'' +
         ", firstName='" + firstName + '\'' +
         ", lastName='" + lastName + '\'' +
         ", email='" + email + '\'' +
