@@ -1,6 +1,8 @@
 package com.tadaah.exceptions;
 
 import com.tadaah.models.ApiError;
+import java.util.Arrays;
+import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -10,9 +12,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Global exception handler for handling various types of exceptions across the application.
@@ -29,7 +28,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * @param request The web request during which the exception was thrown.
    * @return A ResponseEntity containing the error details.
    */
-  @ExceptionHandler(value = {IllegalArgumentException.class, NullPointerException.class, IllegalStateException.class, RuntimeException.class})
+  @ExceptionHandler(value = {IllegalArgumentException.class, NullPointerException.class, IllegalStateException.class,
+      RuntimeException.class})
   protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
     LOG.error("Exception: ", ex);
     ApiError apiError;

@@ -1,10 +1,12 @@
 package com.tadaah.services;
 
+import com.tadaah.models.Dto.request.UserDto;
+import com.tadaah.models.Dto.response.PaginatedResponseDto;
 import com.tadaah.models.Users;
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-  Users createUser(Users user);
+  Users createUser(UserDto user);
   void deleteUser(String username);
-  List<Users> getAllUsers();
+  PaginatedResponseDto<Users> getAllUsers(String username, Pageable pageable);
 }
