@@ -38,8 +38,6 @@ out/
 /docker-compose.override.yml
 *.env
 **/.dockerignore
-docker-compose.yml
-Dockerfile
 
 ### Node ###
 node_modules/
