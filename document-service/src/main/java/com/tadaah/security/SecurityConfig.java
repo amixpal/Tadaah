@@ -17,8 +17,9 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity
-        .csrf(csrf -> csrf.disable())
+        .csrf(csrf -> csrf.disable()) //csrf disabled
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .build();
   }
 
@@ -31,9 +32,10 @@ public class SecurityConfig {
 
   private CorsConfiguration getCorsConfiguration() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedOrigins(Arrays.asList("*"));  // Allow all origins
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowCredentials(true);
+    configuration.setAllowedHeaders(Arrays.asList("*"));  // Allow all headers
+    configuration.setAllowCredentials(false);  // Do not allow credentials
     return configuration;
   }
 }

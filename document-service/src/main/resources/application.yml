@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://127.0.0.1:27017/documentdb} # Default to provided URI
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://43.204.210.161:27017/documentdb} # Default to provided URI
   cache:
     type: simple
 
