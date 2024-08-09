@@ -1,5 +1,6 @@
 package com.tadaah.models.Dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,9 +11,16 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@Schema(description = "Generic API response structure")
 public class ResponseDto<T> {
+
+  @Schema(description = "Indicates whether the request was successful or not", example = "true")
   private Boolean success;
+
+  @Schema(description = "The data returned in the response", example = "{}")
   private T data;
+
+  @Schema(description = "Error message in case of a failure", example = "Invalid input")
   private String error;
 
   /**

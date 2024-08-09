@@ -8,17 +8,16 @@ import com.tadaah.repositories.UserRepository;
 import com.tadaah.services.UserService;
 import com.tadaah.utils.GenericUtils;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-  private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
   @Autowired
   private UserRepository userRepository;
@@ -32,12 +31,12 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public Users createUser(UserDto userDto) {
-    logger.info("Creating a new user: {}", userDto.getUserName());
+    log.info("Creating a new user: {}", userDto.getUserName());
 
     // Check if a user with the same username already exists
     Optional<Users> existingUser = userRepository.findById(userDto.getUserName());
     if (existingUser.isPresent()) {
-      logger.warn("User already exists with username: {}", userDto.getUserName());
+      log.warn("User already exists with username: {}", userDto.getUserName());
       throw new UserServiceException("User already exists with username: " + userDto.getUserName(), HttpStatus.CONFLICT);
     }
 
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
       // Save the new user to the database
       return userRepository.save(user);
     } catch (RuntimeException e) {
-      logger.error("Error creating user: {}", userDto.getUserName(), e);
+      log.error("Error creating user: {}", userDto.getUserName(), e);
       throw new UserServiceException("Error creating user", HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }
@@ -62,11 +61,11 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public void deleteUser(String username) {
-    logger.info("Deleting user with username: {}", username);
+    log.info("Deleting user with username: {}", username);
 
     // Check if the user exists by username
     if (!userRepository.existsById(username)) {
-      logger.warn("User not found with username: {}", username);
+      log.warn("User not found with username: {}", username);
       throw new UserServiceException("User not found with username: " + username, HttpStatus.NOT_FOUND);
     }
 
@@ -74,7 +73,7 @@ public class UserServiceImpl implements UserService {
       // Delete the user from the database
       userRepository.deleteById(username);
     } catch (RuntimeException e) {
-      logger.error("Error deleting user with username: {}", username, e);
+      log.error("Error deleting user with username: {}", username, e);
       throw new UserServiceException("Error deleting user", HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }
@@ -93,12 +92,12 @@ public class UserServiceImpl implements UserService {
   @Override
   public PaginatedResponseDto<Users> getAllUsers(String username, Pageable pageable) {
     try {
-      logger.info("Fetching all users with filters - username: {}, email: {}", username);
+      log.info("Fetching all users with filters - username: {}", username);
       // Retrieve all users from the database with pagination and filters
       Page<Users> usersPage = userRepository.findByUsername(username, pageable);
       return new PaginatedResponseDto<>(usersPage);
     } catch (RuntimeException e) {
-      logger.error("Error fetching all users", e);
+      log.error("Error fetching all users", e);
       throw new UserServiceException("Error fetching users", HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
   }

@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://127.0.0.1:27017/documentdb} # Default to provided URI
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://43.204.210.161:27017/documentdb} # Default to provided URI
   cache:
     type: simple
 
@@ -22,3 +22,11 @@ management:
       show-details: always
   server:
     port: ${MANAGEMENT_SERVER_PORT:9090} # Default to 9090
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+    try-it-out-enabled: true
+    filter: true

@@ -27,10 +27,6 @@ public class NotificationUtil {
    */
   public static void sendNotification(RestTemplate restTemplate, String notificationServiceUrl,
       Documents documents, NotificationType notificationType) {
-    LocalDateTime now = LocalDateTime.now();
-    // Format the timestamp in a human-readable format
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    String timestamp = now.format(formatter);
 
     String message = notificationType.getMessageTemplate()
         .replace("{{userName}}", documents.getUserName())
@@ -39,10 +35,10 @@ public class NotificationUtil {
     NotificationRequest request = new NotificationRequest(
         documents.getUserName(),
         documents.getName(),
-        timestamp,
+        LocalDateTime.now(),
         notificationType.name(),
         message,
-        documents.getId()
+        documents.getId().toString()
     );
 
     try {
@@ -62,11 +58,11 @@ public class NotificationUtil {
     private String receiver;
     private String documentName;
     private String documentId;
-    private String timestamp;
+    private LocalDateTime timestamp;
     private String eventType;
     private String message;
 
-    public NotificationRequest(String receiver, String documentName, String timestamp,
+    public NotificationRequest(String receiver, String documentName, LocalDateTime timestamp,
         String eventType, String message, String documentId) {
       this.receiver = receiver;
       this.documentName = documentName;
