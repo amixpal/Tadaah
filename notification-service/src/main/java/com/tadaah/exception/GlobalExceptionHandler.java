@@ -3,8 +3,7 @@ package com.tadaah.exception;
 import com.tadaah.models.ApiError;
 import java.util.Arrays;
 import java.util.Collections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +15,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 /**
  * Global exception handler for handling various types of exceptions across the application.
  */
+
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  public static final String GENERIC_ERROR_MESSAGE = "Invalid Backend response. Please check your request body or contact the Tadaah support team";
+
 
   /**
    * Handle common runtime exceptions and provide appropriate responses.
@@ -31,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(value = {IllegalArgumentException.class, NullPointerException.class, IllegalStateException.class,
       RuntimeException.class})
   protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-    LOG.error("Exception: ", ex);
+    log.error("Exception: ", ex);
     ApiError apiError;
 
     if (ex instanceof IllegalStateException) {
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     } else if (ex instanceof IllegalArgumentException) {
       apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), Collections.singletonList(ex.getMessage()));
     } else {
-      apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", ex.toString());
+      apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, GENERIC_ERROR_MESSAGE, GENERIC_ERROR_MESSAGE);
     }
 
     return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
