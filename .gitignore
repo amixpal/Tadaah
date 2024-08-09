@@ -45,7 +45,6 @@ npm-debug.log
 yarn-error.log
 
 ### Others ###
-/**/application.yml
 /**/.properties
 /*.bak
 *.swp
