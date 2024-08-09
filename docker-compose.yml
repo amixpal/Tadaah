@@ -64,6 +64,5 @@ services:
       interval: 30s  # Interval between health checks
       timeout: 10s  # Time to wait before considering the health check failed
       retries: 5  # Number of retries before marking the container as unhealthy
-
 volumes:
-  mongo-data:  # Docker volume to persist MongoDB data
+  mongo-data:

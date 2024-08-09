@@ -1,5 +1,6 @@
 package com.tadaah.controllers;
 
+import com.tadaah.config.RabbitMQProducerService;
 import com.tadaah.models.Dto.request.NotificationFilterRequestDto;
 import com.tadaah.models.Dto.response.PaginatedResponseDto;
 import com.tadaah.models.Dto.response.ResponseDto;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
 @RequestMapping("/v1/api/notifications")
@@ -29,18 +31,36 @@ public class NotificationController {
   @Autowired
   private NotificationService notificationService;
 
+  @Autowired
+  private RabbitMQProducerService rabbitMQProducerService;
+
   /**
    * Send a new notification
    *
    * @param notificationDto New Notification will send.
-   * @return The created notification.
+   * @return The simple message.
    */
   @PostMapping
-  public Mono<ResponseDto<Notifications>> sendNotification(@RequestBody NotificationDto notificationDto) {
+  public Mono<ResponseDto<String>> sendNotification(@RequestBody NotificationDto notificationDto) {
     logger.info("createNotification API called payload: {}", notificationDto);
-    return notificationService.createNotification(notificationDto)
-        .map(ResponseDto::success);
+
+    // Asynchronously send the message to RabbitMQ
+    Mono.fromRunnable(() -> {
+              try {
+                rabbitMQProducerService.sendMessage(notificationDto);
+                logger.info("Message sent to RabbitMQ successfully");
+              } catch (Exception e) {
+                logger.error("Failed to send message to RabbitMQ", e);
+              }
+            })
+            .subscribeOn(Schedulers.boundedElastic())
+            .subscribe(); // Execute asynchronously without blocking
+
+    // Immediately return a response to the client
+    return Mono.just(ResponseDto.success("Notification received and will be sent successfully"));
   }
+
+
 
   /**
    * Retrieves notifications based on the provided filters and pagination information.
@@ -51,13 +71,13 @@ public class NotificationController {
   @PostMapping("/filter")
   public Mono<ResponseDto<PaginatedResponseDto<Notifications>>> getNotifications(@RequestBody NotificationFilterRequestDto filter) {
     logger.info("Fetching notifications with filters - type: {}, userName: {}, documentName: {}",
-        filter.getNotificationType(), filter.getUserName(), filter.getDocumentName());
+            filter.getNotificationType(), filter.getUserName(), filter.getDocumentName());
     Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
     return notificationService.getNotifications(
-        filter.getNotificationType(),
-        filter.getUserName(),
-        filter.getDocumentName(),
-        pageable
+            filter.getNotificationType(),
+            filter.getUserName(),
+            filter.getDocumentName(),
+            pageable
     ).map(ResponseDto::success);
   }
 
