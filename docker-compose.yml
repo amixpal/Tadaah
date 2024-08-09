@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  # RabbitMQ AMQP port
+      - "15672:15672"  # RabbitMQ Management UI port
+
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -37,8 +44,11 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/notificationdb
       - SERVER_PORT=8081
       - MANAGEMENT_SERVER_PORT=9091
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
     depends_on:
       - mongo
+      - rabbitmq
 
 volumes:
   mongo-data:
