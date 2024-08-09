@@ -17,7 +17,7 @@ COPY settings.gradle.kts /app/settings.gradle.kts
 RUN chmod +x /app/gradlew
 
 # Build the JAR file
-RUN /app/gradlew :document-service:build --parallel --stacktrace
+RUN /app/gradlew :notification-service:build --parallel --stacktrace
 
 # Stage 2: Create the final image
 FROM openjdk:17-jdk-slim

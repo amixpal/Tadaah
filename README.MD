@@ -35,6 +35,8 @@ The Notification Service receives and processes notifications generated from the
 
 4. Containerization: Both services are containerized and can be deployed using `docker-compose.yml`.
 
+5. The caching interface is available and can be accessed via the API to view the amount of data currently stored in the cache. This cache uses Spring Boot's simple in-memory cache mechanism and has been applied to the document API. The interface allows you to monitor the cache data.
+
 ## How to Run
 
 This section provides instructions on how to run the project using different methods.
@@ -70,12 +72,12 @@ If you prefer to run services independently, follow these steps:
 
 2. Install RabbitMQ:
    ```
-   docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+   docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:latest
    ```
 
 ##### Document Service
 
-The Document Service depends on Spring Boot's internal cache. You can run it in two ways:
+The Document Service depends on Spring Boot's internal cache (In memory cache). You can run it in two ways:
 
 1. Through an IDE:
    - Update `application.yml`:
