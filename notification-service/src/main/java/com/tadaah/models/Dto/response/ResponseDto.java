@@ -29,12 +29,11 @@ public class ResponseDto<T> {
   /**
    * Creates an error response with the provided error message.
    *
-   * @param <T>     The type of the data.
-   * @param error   The error message to be returned in the response.
-   * @param message
+   * @param error The error message to be returned in the response.
+   * @param <T> The type of the data.
    * @return A ResponseDto object representing an error response.
    */
-  public static <T> ResponseDto<T> error(String error, String message) {
+  public static <T> ResponseDto<T> error(String error) {
     return new ResponseDto<>(false, null, error);
   }
 }
