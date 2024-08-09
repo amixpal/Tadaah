@@ -40,7 +40,3 @@ configurations {
         extendsFrom(configurations.annotationProcessor.get())
     }
 }
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
