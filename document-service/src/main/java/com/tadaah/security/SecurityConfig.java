@@ -1,25 +1,39 @@
 package com.tadaah.security;
 
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import java.util.Arrays;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/**
- * SecurityConfig is a configuration class that implements WebMvcConfigurer to customize
- * the CORS (Cross-Origin Resource Sharing) settings for the application.
- *
- * This configuration allows the application to accept cross-origin requests from any domain
- * and supports common HTTP methods (GET, POST, PUT, DELETE, OPTIONS).
- * All headers are permitted, and credentials (such as cookies or HTTP authentication) are allowed
- * to be included in the requests.
- */
-public class SecurityConfig implements WebMvcConfigurer {
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
 
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**")  // Allow CORS for all paths
-        .allowedOrigins("*")  // Allow all origins
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Allow all methods
-        .allowedHeaders("*")  // Allow all headers
-        .allowCredentials(true);  // Allow credentials
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    return httpSecurity
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+        .build();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", getCorsConfiguration());
+    return source;
+  }
+
+  private CorsConfiguration getCorsConfiguration() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowCredentials(true);
+    return configuration;
   }
 }
