@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -66,7 +67,7 @@ public class UserController {
   )
   public ResponseDto<Users> createUser(
       @Parameter(description = "The user details to be created", required = true)
-      @RequestBody UserDto userDto) {
+      @RequestBody @Valid UserDto userDto) {
     log.info("createUser API called with parameters: {}", userDto);
     Users createdUser = userService.createUser(userDto);
     log.info("User created successfully: {}", createdUser);

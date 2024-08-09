@@ -37,6 +37,44 @@ The Notification Service receives and processes notifications generated from the
 
 5. The caching interface is available and can be accessed via the API to view the amount of data currently stored in the cache. This cache uses Spring Boot's simple in-memory cache mechanism and has been applied to the document API. The interface allows you to monitor the cache data.
 
+
+## API Response Structure
+
+The API uses a standardized response structure for both successful responses and error scenarios.
+
+### Successful Responses
+
+For successful API calls, the response structure follows the `ResponseDto<T>` format:
+
+```java
+public class ResponseDto<T> {
+    private T data;
+    private String message;
+    // ... constructors and other methods
+}
+```
+
+### Error/Failure Responses
+
+For error scenarios, including DTO field validation failures, runtime exceptions, and other failure cases, the response structure follows the `ApiError` format:
+
+```java
+public class ApiError {
+    private HttpStatus status;
+    private String message;
+    private List<String> errors;
+    // ... constructors and other methods
+}
+```
+
+This `ApiError` class is used to provide a consistent error response structure across the API. It includes:
+
+- HTTP status code of the error
+- A general error message
+- A list of specific error details, which is particularly useful for field validation errors
+
+Whether it's a validation error on a DTO, a runtime exception, or any other type of failure, the API will use this `ApiError` structure to communicate the problem to the client.
+
 ## How to Run
 
 This section provides instructions on how to run the project using different methods.

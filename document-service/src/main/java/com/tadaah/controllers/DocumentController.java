@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class DocumentController {
           description = "Details of the document to be created",
           required = true
       )
-      @RequestBody DocumentDto documentDto) {
+      @RequestBody @Valid DocumentDto documentDto) {
     logger.info("Creating API called with document: {}", documentDto);
     Documents createdDocument = documentService.createDocument(documentDto);
     return ResponseDto.success(createdDocument);
@@ -120,7 +121,7 @@ public class DocumentController {
           description = "Updated details of the document",
           required = true
       )
-      @RequestBody DocumentDto documentDto) {
+      @RequestBody @Valid DocumentDto documentDto) {
     logger.info("updateDocument API called with ID: {} and document: {}", id, documentDto);
     Documents updatedDocument = documentService.updateDocument(id, documentDto);
     return ResponseDto.success(updatedDocument);

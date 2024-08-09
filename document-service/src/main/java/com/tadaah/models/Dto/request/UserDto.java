@@ -1,7 +1,7 @@
 package com.tadaah.models.Dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -9,14 +9,14 @@ import lombok.Data;
 public class UserDto {
 
   @Schema(description = "The username of the user", example = "john_doe")
-  @NotBlank(message = "Username is required")
+  @NotNull(message = "Username is required")
   private String userName;
 
   @Schema(description = "The first name of the user", example = "John")
-  @NotBlank(message = "First name is required")
+  @NotNull(message = "First name is required")
   private String firstName;
 
   @Schema(description = "The last name of the user", example = "Doe")
-  @NotBlank(message = "Last name is required")
+  @NotNull(message = "Last name is required")
   private String lastName;
 }

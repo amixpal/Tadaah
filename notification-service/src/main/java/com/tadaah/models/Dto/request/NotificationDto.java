@@ -12,15 +12,15 @@ import lombok.Data;
 public class NotificationDto {
 
   @Schema(description = "The receiver of the notification", example = "john.doe@example.com")
-  @NotBlank(message = "Receiver is required")
+  @NotNull(message = "Receiver is required")
   private String receiver;
 
   @Schema(description = "The name of the document associated with the notification", example = "Invoice 2024")
-  @NotBlank(message = "Document name is required")
+  @NotNull(message = "Document name is required")
   private String documentName;
 
   @Schema(description = "The unique identifier of the document", example = "abc123")
-  @NotBlank(message = "Document ID is required")
+  @NotNull(message = "Document ID is required")
   private String documentId;
 
   @Schema(description = "The timestamp when the notification was created", example = "2024-08-09T14:00:00Z")

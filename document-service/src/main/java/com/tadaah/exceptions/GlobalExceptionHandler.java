@@ -1,13 +1,21 @@
 package com.tadaah.exceptions;
 
 import com.tadaah.models.ApiError;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -28,8 +36,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * @param request The web request during which the exception was thrown.
    * @return A ResponseEntity containing the error details.
    */
-  @ExceptionHandler(value = {IllegalArgumentException.class, NullPointerException.class, IllegalStateException.class,
-      RuntimeException.class})
+
+  @ExceptionHandler(value = {IllegalArgumentException.class, NullPointerException.class, IllegalStateException.class, RuntimeException.class})
   protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
     LOG.error("Exception: ", ex);
     ApiError apiError;
@@ -44,6 +52,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     return handleExceptionInternal(ex, apiError, new HttpHeaders(), apiError.getStatus(), request);
   }
+
 
   /**
    * Handle DocumentServiceException and provide appropriate responses.
